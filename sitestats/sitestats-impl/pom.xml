@@ -14,7 +14,7 @@
     <parent>
         <groupId>org.sakaiproject.sitestats</groupId>
         <artifactId>sitestats</artifactId>
-        <version>13-SNAPSHOT</version><!-- sitestats.version -->
+        <version>19-SNAPSHOT</version><!-- sitestats.version -->
     </parent>
 
     <!-- Packaging -->
@@ -77,6 +77,10 @@
         <dependency>
             <groupId>org.sakaiproject.edu-services.course-management</groupId>
             <artifactId>coursemanagement-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.sakaiproject.presence</groupId>
+            <artifactId>sakai-presence-api</artifactId>
         </dependency>
 
         <!-- Spring & Hibernate -->

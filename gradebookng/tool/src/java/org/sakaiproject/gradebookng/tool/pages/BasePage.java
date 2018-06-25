@@ -40,6 +40,7 @@ import org.sakaiproject.gradebookng.business.GbRole;
 import org.sakaiproject.gradebookng.business.GradebookNgBusinessService;
 import org.sakaiproject.gradebookng.business.exception.GbAccessDeniedException;
 import org.sakaiproject.gradebookng.tool.component.GbFeedbackPanel;
+import org.sakaiproject.rubrics.logic.RubricsService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -56,6 +57,9 @@ public class BasePage extends WebPage {
 
 	@SpringBean(name = "org.sakaiproject.gradebookng.business.GradebookNgBusinessService")
 	protected GradebookNgBusinessService businessService;
+
+	@SpringBean(name = "org.sakaiproject.rubrics.logic.RubricsService")
+	protected RubricsService rubricsService;
 
 	Link<Void> gradebookPageLink;
 	Link<Void> settingsPageLink;
@@ -131,7 +135,7 @@ public class BasePage extends WebPage {
 
 			@Override
 			public boolean isVisible() {
-				return (BasePage.this.role == GbRole.INSTRUCTOR);
+				return (businessService.isUserAbleToEditAssessments());
 			}
 		};
 		this.importExportPageLink.add(new Label("screenreaderlabel", getString("link.screenreader.tabnotselected")));
@@ -165,7 +169,7 @@ public class BasePage extends WebPage {
 
 			@Override
 			public boolean isVisible() {
-				return (BasePage.this.role == GbRole.INSTRUCTOR);
+				return (businessService.isUserAbleToEditAssessments());
 			}
 		};
 		this.settingsPageLink.add(new Label("screenreaderlabel", getString("link.screenreader.tabnotselected")));
@@ -294,7 +298,7 @@ public class BasePage extends WebPage {
 
 	/**
 	 * Performs role checks for instructor-only pages and redirects users to appropriate pages based on their role.
-	 * No role -> AccessDeniedPage. Student -> StudentPage. TA -> GradebookPage.
+	 * No role -> AccessDeniedPage. Student -> StudentPage. TA -> GradebookPage (if ta does not have the gradebook.editAssignments permission)
 	 */
 	protected final void defaultRoleChecksForInstructorOnlyPage()
 	{
@@ -306,6 +310,9 @@ public class BasePage extends WebPage {
 			case STUDENT:
 				throw new RestartResponseException(StudentPage.class);
 			case TA:
+				if(businessService.isUserAbleToEditAssessments()) {
+					break;
+				}
 				throw new RestartResponseException(GradebookPage.class);
 			default:
 				break;
